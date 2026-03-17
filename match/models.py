@@ -31,16 +31,32 @@ class Team(models.Model):
     def __str__(self):
         return f"{self.team_number} | {self.nickname}"
 
-class Event(models.Model):
-    # e.g., "2026wiply"
+class District(models.Model):
+    # e.g., '2026fit', '2026fma', '2026wi'
     key = models.CharField(max_length=20, primary_key=True)
-    name = models.CharField(max_length=100, blank=True, null=True)
-    year = models.IntegerField()
-    event_code = models.CharField(max_length=20) # e.g., "wiply"
-    start_date = models.DateField(null=True, blank=True)
+    abbreviation = models.CharField(max_length=10) # e.g., 'WI'
+    display_name = models.CharField(max_length=100) # e.g., 'FIRST Wisconsin'
 
     def __str__(self):
-        return f"{self.year} {self.name or self.key}"
+        return self.display_name
+
+class Event(models.Model):
+    key = models.CharField(max_length=20, primary_key=True)
+    name = models.CharField(max_length=200)
+    year = models.IntegerField()
+    
+    # Connect Event to District
+    # on_delete=SET_NULL ensures if a district is deleted, we don't lose the event data
+    district = models.ForeignKey(
+        District, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True, 
+        related_name='events'
+    )
+
+    def __str__(self):
+        return f"{self.year} {self.name}"
 
 class Match(models.Model):
     key = models.CharField(max_length=20, primary_key=True)
