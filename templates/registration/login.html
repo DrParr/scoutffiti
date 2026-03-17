@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Login | Scoutffiti{% endblock %}
+
+{% block content %}
+<div style="max-width: 400px; margin: 4rem auto;">
+    <div class="card" style="border-top: 4px solid var(--color-primary);">
+        <h2 style="color: var(--color-primary); margin-top: 0;">Sign In</h2>
+        <p style="color: var(--color-text-muted); font-size: 0.9rem;">Access the Scoutffiti Dashboard</p>
+        
+        <form method="post" style="display: flex; flex-direction: column; gap: 1.5rem;">
+            {% csrf_token %}
+            
+            {% if form.errors %}
+                <p style="color: var(--color-secondary); font-size: 0.9rem;">Your username and password didn't match. Please try again.</p>
+            {% endif %}
+
+            <div>
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">Username</label>
+                <input type="text" name="username" style="width: 100%; padding: 0.75rem; background: var(--color-bg-dark); border: 1px solid var(--color-border); color: white; border-radius: 4px;">
+            </div>
+
+            <div>
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">Password</label>
+                <input type="password" name="password" style="width: 100%; padding: 0.75rem; background: var(--color-bg-dark); border: 1px solid var(--color-border); color: white; border-radius: 4px;">
+            </div>
+
+            <button type="submit" class="btn-primary" style="width: 100%;">Enter Pits</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

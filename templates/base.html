@@ -1,0 +1,63 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Scoutffiti{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/global.css' %}">
+</head>
+<body style="background-color: #101010; color: #E0E0E0; font-family: 'Open Sans', sans-serif; margin: 0;">
+
+    <div style="display: flex; flex-direction: column; min-height: 100vh;">
+
+        <header style="background-color: #000; padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #C8FF00;">
+            
+            <div style="display: flex; align-items: center;">
+                <a href="{% url 'match:home' %}">
+                <img src="{% static 'images/scoutffiti.png' %}" alt="Scoutffiti" class="logo-img"></a>
+            </div>
+
+            <nav style="display: flex; gap: 20px;">
+                <a href="{% url 'match:home' %}" style="color: #E0E0E0; text-decoration: none; font-weight: bold;">HOME</a>
+                <a href="{% url 'match:event_list' %}" style="color: #E0E0E0; text-decoration: none;">EVENTS</a>
+                <a href="{% url 'match:team_list' %}" style="color: #E0E0E0; text-decoration: none;">TEAMS</a>
+                </nav>
+
+            <div style="color: #A0A0A0; font-size: 0.9em; text-align: right;">
+                {% if user.is_authenticated %}
+                    Welcome, <span style="color: #C8FF00; font-weight: bold;">{{ user.username }}</span><br>
+                    <a href="{% url 'logout' %}" style="color: #E0E0E0; text-decoration: none;">Log Out</a>
+                    {% if user.is_staff %}
+                        | <a href="/admin/" style="color: #A0A0A0; text-decoration: none;">Admin</a>
+                    {% endif %}
+                {% else %}
+                    Guest User<br>
+                    <a href="{% url 'login' %}" style="color: #E0E0E0; text-decoration: none; font-weight: bold;">Log In</a>
+                {% endif %}
+            </div>
+        </header>
+
+        {% if messages %}
+            <div style="padding: 10px 20px;">
+                {% for message in messages %}
+                    <div style="padding: 10px; border-radius: 4px; color: #000; 
+                        {% if message.tags == 'success' %}background-color: #C8FF00;{% else %}background-color: #A0A0A0;{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <main style="flex: 1; padding: 20px;">
+            {% block content %}
+            {% endblock %}
+        </main>
+
+        <footer style="background-color: #000; padding: 15px; text-align: center; border-top: 1px solid #A0A0A0; font-size: 0.8em; color: #A0A0A0;">
+            © 2026 Scoutffiti | FIRST Wisconsin Event Tools | Dedicated Scouting for Greendale Area
+        </footer>
+
+    </div>
+</body>
+</html>
