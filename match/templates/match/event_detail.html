@@ -31,38 +31,34 @@
             </div>
         </div>
 
-        <div class="match-list">
-            {% for match in event.matches.all|dictsort:"match_number" %}
-                <div class="match-row d-flex align-items-center mb-2">
-                    <div class="match-number-label">
-                        {{ match.comp_level|upper }} {{ match.match_number }}
-                    </div>
-                    
-                    <div class="alliance red-alliance d-flex flex-fill justify-content-around p-2">
-                        {% for team in match.red_teams.all %}
-                            <span class="team-num">{{ team.team_number }}</span>
-                        {% endfor %}
-                    </div>
-                    
-                    <div class="vs-divider px-2">VS</div>
-                    
-                    <div class="alliance blue-alliance d-flex flex-fill justify-content-around p-2">
-                        {% for team in match.blue_teams.all %}
-                            <span class="team-num">{{ team.team_number }}</span>
-                        {% endfor %}
-                    </div>
+<div class="match-list">
+    {% for match in event.matches.all|dictsort:"match_number" %}
+        <div class="match-row d-flex align-items-center mb-2">
+            <div class="match-number-label">
+                {{ match.comp_level|upper }} {{ match.match_number }}
+            </div>
+            
+            <a href="{% url 'match:scout_form' match.key 'red' %}" class="alliance red-alliance d-flex flex-fill justify-content-around p-2 text-decoration-none">
+                {% for team in match.red_teams.all %}
+                    <span class="team-num">{{ team.team_number }}</span>
+                {% endfor %}
+            </a>
+            
+            <div class="vs-divider px-2">VS</div>
+            
+            <a href="{% url 'match:scout_form' match.key 'blue' %}" class="alliance blue-alliance d-flex flex-fill justify-content-around p-2 text-decoration-none">
+                {% for team in match.blue_teams.all %}
+                    <span class="team-num">{{ team.team_number }}</span>
+                {% endfor %}
+            </a>
 
-                    <div class="match-actions ps-3">
-                        <a href="#" class="btn btn-sm btn-outline-chartreuse">Scout</a>
-                    </div>
-                </div>
-            {% empty %}
-                <div class="text-center p-5 border border-secondary rounded">
-                    <p class="text-muted">No matches have been synced for this event yet.</p>
-                    <button class="btn btn-chartreuse btn-sm">Sync with TBA</button>
-                </div>
-            {% endfor %}
+            </div>
+    {% empty %}
+        <div class="text-center p-5 border border-secondary rounded">
+            <p class="text-muted">No matches have been synced for this event yet.</p>
         </div>
+    {% endfor %}
+</div>
     </div>
 </div>
 
@@ -167,5 +163,43 @@
         background-color: #d9ff33;
         box-shadow: 0 0 15px rgba(200, 255, 0, 0.6);
     }
+    /* Make the alliance blocks behave like buttons */
+.alliance {
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+/* Red Hover Effect */
+.red-alliance:hover {
+    background: rgba(255, 50, 50, 0.4); 
+    border-color: #ff8080;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 50, 50, 0.3);
+}
+
+.red-alliance:active {
+    transform: translateY(0px);
+    background: rgba(255, 50, 50, 0.6);
+}
+
+/* Blue Hover Effect */
+.blue-alliance:hover {
+    background: rgba(50, 150, 255, 0.4); 
+    border-color: #80bfff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(50, 150, 255, 0.3);
+}
+
+.blue-alliance:active {
+    transform: translateY(0px);
+    background: rgba(50, 150, 255, 0.6);
+}
+
+/* Match Row refinement */
+.match-row {
+    background: #1a1a1a; /* Darker than before for more contrast */
+    border: 1px solid #2a2a2a;
+}
 </style>
 {% endblock %}

@@ -50,3 +50,66 @@ class BlueAllianceSync:
             )
             if created: count += 1
         return count
+
+    def sync_matches(self, event_key):
+        matches_json = self.client.get_event_matches(event_key)
+
+        self.sync_matches_from_json(event_key, matches_json)
+
+    def sync_matches_from_json(self, event_key, matches_json):
+        event = Event.objects.get(key=event_key)
+        count = 0
+
+        for m in matches_json:
+            # 1. Sync the Match object
+            # We use the TBA key (e.g., '2026wiply_qm1') as the unique lookup
+            match_obj, created = Match.objects.update_or_create(
+                key=m['key'],
+                defaults={
+                    'event': event,
+                    'match_number': m['match_number'],
+                    'comp_level': m['comp_level'],
+                    'score_red': m['alliances']['red'].get('score'),
+                    'score_blue': m['alliances']['blue'].get('score'),
+                    'predicted_time': m.get('predicted_time'),
+                    'actual_time': m.get('actual_time'),
+                }
+            )
+
+            # 2. Process Red Alliance Teams
+            red_team_objs = []
+            for t_key in m['alliances']['red']['team_keys']:
+                # Strip 'frc' to get the integer for the team_number field
+                t_number = int(t_key.replace('frc', ''))
+                
+                # Using update_or_create here prevents the UNIQUE constraint error 
+                # on team_number by updating the existing record if it exists.
+                team, _ = Team.objects.update_or_create(
+                    team_number=t_number,
+                    defaults={
+                        'key': t_key,
+                    }
+                )
+                red_team_objs.append(team)
+
+            # 3. Process Blue Alliance Teams
+            blue_team_objs = []
+            for t_key in m['alliances']['blue']['team_keys']:
+                t_number = int(t_key.replace('frc', ''))
+                
+                team, _ = Team.objects.update_or_create(
+                    team_number=t_number,
+                    defaults={
+                        'key': t_key,
+                    }
+                )
+                blue_team_objs.append(team)
+
+            # 4. Update the ManyToMany relationships
+            match_obj.red_teams.set(red_team_objs)
+            match_obj.blue_teams.set(blue_team_objs)
+
+            if created:
+                count += 1
+                
+        return count
