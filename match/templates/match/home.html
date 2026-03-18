@@ -1,4 +1,131 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Home | Scoutffiti{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4 text-center">Scoutffiti Home</h1>
+
+    <div class="row mb-5">
+        <div class="col-12">
+            <h2 class="section-title"><span class="pulse"></span> Live Now</h2>
+            <div class="row">
+                {% for event in current_events %}
+                <div class="col-md-6 mb-3">
+                    <div class="card event-card-live border-neon">
+                        <div class="card-body">
+                            <span class="badge bg-danger mb-2">ACTIVE</span>
+                            <h3 class="card-title">{{ event.short_name }}</h3>
+                            <p class="card-text text-muted">
+                                {{ event.location_name }}<br>
+                                {{ event.city }}, {{ event.state_prov }}
+                            </p>
+                            <a href="{% url 'match:event_detail' event.key %}" class="btn btn-scout w-100">
+                                START SCOUTING
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <p class="text-muted italic">No events currently active in Wisconsin.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-12">
+            <h2 class="section-title">Upcoming Regionals</h2>
+            <div class="d-flex flex-nowrap overflow-auto pb-3 gap-3">
+                {% for event in upcoming_events %}
+                <div class="card upcoming-card" style="min-width: 250px;">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <span class="badge bg-secondary">Week {{ event.week }}</span>
+                            <small class="text-muted">{{ event.start_date|date:"M d" }}</small>
+                        </div>
+                        <h5 class="mt-2">{{ event.short_name }}</h5>
+                        <p class="small text-muted mb-3">{{ event.city }}</p>
+                       
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <h2 class="section-title text-muted">Recent History</h2>
+            <ul class="list-group list-group-flush bg-transparent">
+                {% for event in past_events %}
+                <li class="list-group-item bg-transparent text-muted d-flex justify-content-between align-items-center">
+                    <span>{{ event.short_name }} ({{ event.year }})</span>
+                    <small>{{ event.city }}</small>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Scoutffiti Custom Theme */
+    .section-title {
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-left: 5px solid #C8FF00; /* Neon Chartreuse */
+        padding-left: 15px;
+        margin-bottom: 25px;
+    }
+
+    .event-card-live {
+        background: #1a1a1a;
+        color: white;
+        border: 2px solid #C8FF00;
+        box-shadow: 0 0 15px rgba(200, 255, 0, 0.2);
+    }
+
+    .btn-scout {
+        background-color: #C8FF00;
+        color: black;
+        font-weight: 900;
+        border: none;
+        transition: 0.3s ease;
+    }
+
+    .btn-scout:hover {
+        background-color: #e6ff80;
+        box-shadow: 0 0 20px rgba(200, 255, 0, 0.5);
+        transform: translateY(-2px);
+    }
+
+    .pulse {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        background: #FF007F; /* Neon Magenta */
+        border-radius: 50%;
+        margin-right: 10px;
+        animation: pulse-animation 2s infinite;
+    }
+
+    @keyframes pulse-animation {
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 0, 127, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(255, 0, 127, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 0, 127, 0); }
+    }
+
+    .upcoming-card {
+        background: #252525;
+        border: 1px solid #444;
+        color: #eee;
+    }
+
+    /* Custom scrollbar for horizontal scrolling on the Pi/Mobile */
+    ::-webkit-scrollbar { height: 6px; }
+    ::-webkit-scrollbar-thumb { background: #444; border-radius: 10px; }
+</style>
+{% endblock %}

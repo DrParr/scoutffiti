@@ -11,10 +11,23 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+import environ
+import os
+
+# Initialize environ
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, False)
+)
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Take environment variables from .env file
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
+TBA_API_KEY = env('BLUE_ALLIANCE_API_KEY')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
@@ -25,7 +38,7 @@ SECRET_KEY = 'django-insecure-9**^ne8dks#(y56p6!p_n47s!v9p@b102$c*iv+lxsmc+x#w0l
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -122,7 +135,7 @@ STATICFILES_DIRS = [
 ]
 
 # Where to go after logging in
-LOGIN_REDIRECT_URL = 'matches:dashboard'
+LOGIN_REDIRECT_URL = 'match:home'
 
 # Where to go after logging out
 LOGOUT_REDIRECT_URL = 'login'

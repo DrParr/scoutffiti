@@ -43,12 +43,26 @@ class District(models.Model):
 class Event(models.Model):
     key = models.CharField(max_length=20, primary_key=True)
     name = models.CharField(max_length=200)
+    short_name = models.CharField(max_length=100, null=True, blank=True)
     year = models.IntegerField()
     
-    # Connect Event to District
-    # on_delete=SET_NULL ensures if a district is deleted, we don't lose the event data
+    # Dates
+    start_date = models.DateField(null=True, blank=True)
+    end_date = models.DateField(null=True, blank=True)
+    week = models.IntegerField(null=True, blank=True) # FRC Week (0-6)
+
+    # Location Info
+    location_name = models.CharField(max_length=255, null=True, blank=True)
+    city = models.CharField(max_length=100, null=True, blank=True)
+    state_prov = models.CharField(max_length=50, null=True, blank=True)
+    postal_code = models.CharField(max_length=20, null=True, blank=True)
+    
+    # Classification
+    event_type_string = models.CharField(max_length=100, null=True, blank=True)
+    website = models.URLField(max_length=500, null=True, blank=True)
+    
     district = models.ForeignKey(
-        District, 
+        'District', 
         on_delete=models.SET_NULL, 
         null=True, 
         blank=True, 
@@ -56,7 +70,7 @@ class Event(models.Model):
     )
 
     def __str__(self):
-        return f"{self.year} {self.name}"
+        return self.short_name or self.name
 
 class Match(models.Model):
     key = models.CharField(max_length=20, primary_key=True)

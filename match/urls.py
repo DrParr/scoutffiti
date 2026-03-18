@@ -1,12 +1,12 @@
 from django.urls import path
-from . import views
+from .views import HomeView, EventDetailView
 
 app_name = 'match'  # This is the namespace
 
 urlpatterns = [
-    path('', views.home, name='home'),
+    path('', HomeView.as_view(), name='home'),
     # You can add more later, e.g.:
     # path('events/', views.event_list, name='event_list'),
-    path('events/', views.home, name='event_list'),
-    path('teams/', views.home, name='team_list'),
+    path('event/<str:event_key>/', EventDetailView.as_view(), name='event_detail'),
+    path('teams/', HomeView.as_view(), name='team_list'),
 ]
