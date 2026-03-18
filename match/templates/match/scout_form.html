@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block content %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<div class="container mt-2" style="max-width: 600px; padding-bottom: 50px;">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4 p-3 border-left-neon" style="background: #1a1a1a;">
+        <div>
+            <h2 class="text-neon mb-0" style="font-weight: 900;">{{ match.comp_level|upper }} {{ match.match_number }}</h2>
+            <span class="badge {% if alliance_color == 'red' %}bg-danger{% else %}bg-primary{% endif %}">
+                {{ alliance_color|upper }} ALLIANCE
+            </span>
+        </div>
+        <div class="text-end">
+            <span class="text-muted small" id="step-indicator">AUTO</span>
+        </div>
+    </div>
+
+    <form id="scout-master-form" method="POST">
+        {% csrf_token %}
+
+        <div id="step-auto" class="scout-step">
+            <h4 class="text-white mb-3">Autonomous Phase</h4>
+            {% for team in teams %}
+            <div class="team-card mb-3 p-3">
+                <span class="text-chartreuse d-block mb-2 font-weight-bold" data-team-num="{{ team.team_number }}">TEAM {{ team.team_number }}</span>
+                <div class="btn-group w-100" role="group">
+                    <input type="radio" class="btn-check" name="auto_t{{ forloop.counter }}_score" id="auto_t{{ forloop.counter }}_0" value="0" checked>
+                    <label class="btn btn-sm btn-outline-secondary" for="auto_t{{ forloop.counter }}_0">None</label>
+                    <input type="radio" class="btn-check" name="auto_t{{ forloop.counter }}_score" id="auto_t{{ forloop.counter }}_1" value="1"><label class="btn btn-sm btn-outline-chartreuse" for="auto_t{{ forloop.counter }}_1">Nearly</label>
+                    <input type="radio" class="btn-check" name="auto_t{{ forloop.counter }}_score" id="auto_t{{ forloop.counter }}_2" value="2"><label class="btn btn-sm btn-outline-chartreuse" for="auto_t{{ forloop.counter }}_2">Some</label>
+                    <input type="radio" class="btn-check" name="auto_t{{ forloop.counter }}_score" id="auto_t{{ forloop.counter }}_4" value="4"><label class="btn btn-sm btn-outline-chartreuse" for="auto_t{{ forloop.counter }}_4">Most</label>
+                    <input type="radio" class="btn-check" name="auto_t{{ forloop.counter }}_score" id="auto_t{{ forloop.counter }}_8" value="8"><label class="btn btn-sm btn-outline-chartreuse" for="auto_t{{ forloop.counter }}_8">All</label>
+                </div>
+            </div>
+            {% endfor %}
+            <button type="button" class="btn btn-chartreuse w-100 mt-4 py-3" onclick="nextStep('tele-1')">START TELE-OP</button>
+        </div>
+
+        {% for period in "123456"|make_list %}
+        <div id="step-tele-{{ period }}" class="scout-step" style="display: none;">
+            <h4 class="text-white mb-3">Tele-op Period {{ period }} of 6</h4>
+            {% for team in teams %}
+            <div class="team-card mb-3 p-3">
+                <span class="text-chartreuse d-block mb-2 font-weight-bold">TEAM {{ team.team_number }}</span>
+                <div class="btn-group w-100 mb-3" role="group">
+                    <input type="radio" class="btn-check" name="p{{ period }}_t{{ forloop.counter }}_score" id="p{{ period }}_t{{ forloop.counter }}_0" value="0" checked>
+                    <label class="btn btn-sm btn-outline-secondary" for="p{{ period }}_t{{ forloop.counter }}_0">None</label>
+                    <input type="radio" class="btn-check" name="p{{ period }}_t{{ forloop.counter }}_score" id="p{{ period }}_t{{ forloop.counter }}_2" value="2"><label class="btn btn-sm btn-outline-secondary" for="p{{ period }}_t{{ forloop.counter }}_2">Some</label>
+                    <input type="radio" class="btn-check" name="p{{ period }}_t{{ forloop.counter }}_score" id="p{{ period }}_t{{ forloop.counter }}_4" value="4"><label class="btn btn-sm btn-outline-secondary" for="p{{ period }}_t{{ forloop.counter }}_4">Most</label>
+                </div>
+                <div class="row g-2">
+                    <div class="col-6">
+                        <input type="checkbox" class="btn-check" name="p{{ period }}_t{{ forloop.counter }}_def" id="p{{ period }}_t{{ forloop.counter }}_def">
+                        <label class="btn btn-sm btn-outline-magenta w-100" for="p{{ period }}_t{{ forloop.counter }}_def">Defense</label>
+                    </div>
+                    <div class="col-6">
+                        <input type="checkbox" class="btn-check" name="p{{ period }}_t{{ forloop.counter }}_pass" id="p{{ period }}_t{{ forloop.counter }}_pass">
+                        <label class="btn btn-sm btn-outline-magenta w-100" for="p{{ period }}_t{{ forloop.counter }}_pass">Passing</label>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            <div class="d-flex gap-2 mt-4">
+                <button type="button" class="btn btn-outline-secondary flex-fill" onclick="nextStep('{% if period == '1' %}auto{% else %}tele-{{ period|add:"-1" }}{% endif %}')">BACK</button>
+                {% if period == '6' %}
+                <button type="button" class="btn btn-chartreuse flex-fill py-3" onclick="generateReview()">REVIEW</button>
+                {% else %}
+                <button type="button" class="btn btn-chartreuse flex-fill py-3" onclick="nextStep('tele-{{ period|add:"1" }}')">NEXT</button>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+
+        <div id="step-review" class="scout-step" style="display: none;">
+            <h4 class="text-white mb-3">Final Review</h4>
+            <div id="review-content" class="mb-4"></div>
+            <div class="d-flex flex-column gap-2 mt-4">
+                <button type="submit" class="btn btn-chartreuse py-3 shadow-lg" style="font-size: 1.2rem;">SUBMIT MATCH</button>
+                <div class="row g-2">
+                    <div class="col-6"><button type="button" class="btn btn-outline-secondary w-100" onclick="nextStep('auto')">EDIT AUTO</button></div>
+                    <div class="col-6"><button type="button" class="btn btn-outline-secondary w-100" onclick="nextStep('tele-6')">EDIT TELE-OP</button></div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<style>
+    :root { --neon-chartreuse: #C8FF00; --neon-magenta: #FF007F; }
+    .border-left-neon { border-left: 5px solid var(--neon-chartreuse); }
+    .text-neon, .text-chartreuse { color: var(--neon-chartreuse); font-weight: bold; }
+    .team-card { background: #1a1a1a; border: 1px solid #333; border-radius: 8px; }
+    .btn-outline-chartreuse { color: var(--neon-chartreuse); border-color: var(--neon-chartreuse); }
+    .btn-check:checked + .btn-outline-chartreuse { background: var(--neon-chartreuse); color: #000; }
+    .btn-outline-magenta { color: var(--neon-magenta); border-color: var(--neon-magenta); }
+    .btn-check:checked + .btn-outline-magenta { background: var(--neon-magenta); color: #fff; }
+    .btn-chartreuse { background: var(--neon-chartreuse); color: #000; font-weight: 900; border: none; }
+    .border-chartreuse { border: 1px solid var(--neon-chartreuse) !important; }
+    .bg-black { background-color: #000 !important; }
+    .btn-group.w-100 .btn { flex: 1 1 0 !important; width: 0; white-space: nowrap; overflow: hidden; }
+</style>
+
+<script>
+    function nextStep(stepId) {
+        document.querySelectorAll('.scout-step').forEach(el => el.style.display = 'none');
+        const target = document.getElementById('step-' + stepId);
+        if (target) {
+            target.style.display = 'block';
+            document.getElementById('step-indicator').innerText = stepId.toUpperCase().replace('-', ' ');
+        }
+        window.scrollTo(0, 0);
+    }
+
+    function generateReview() {
+        const container = document.getElementById('review-content');
+        let html = '<div class="team-card p-3 mb-3"><table class="table table-dark table-borderless mb-0"><thead><tr class="text-chartreuse small"><th>TEAM</th><th>AUTO</th><th>TELE</th><th>DEF</th></tr></thead><tbody>';
+        
+        for (let i = 1; i <= 3; i++) {
+            const teamLabel = document.querySelectorAll('[data-team-num]')[i-1].innerText;
+            const autoVal = document.querySelector(`input[name="auto_t${i}_score"]:checked`).nextElementSibling.innerText;
+            
+            let teleScore = 0;
+            let defCount = 0;
+            for (let p = 1; p <= 6; p++) {
+                teleScore += parseInt(document.querySelector(`input[name="p${p}_t${i}_score"]:checked`).value);
+                if (document.querySelector(`input[name="p${p}_t${i}_def"]`).checked) defCount++;
+            }
+            
+            html += `<tr class="border-bottom border-secondary">
+                <td class="text-white font-weight-bold">${teamLabel.replace('TEAM ', '')}</td>
+                <td class="small">${autoVal}</td>
+                <td class="small">${teleScore} pts</td>
+                <td class="small">${defCount}x</td>
+            </tr>`;
+        }
+        html += '</tbody></table></div>';
+        container.innerHTML = html;
+        nextStep('review');
+    }
+
+    window.onload = () => nextStep('auto');
+</script>
+{% endblock %}
