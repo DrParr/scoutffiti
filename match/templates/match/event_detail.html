@@ -32,31 +32,33 @@
         </div>
 
 <div class="match-list">
-    {% for match in event.matches.all|dictsort:"match_number" %}
-        <div class="match-row d-flex align-items-center mb-2">
-            <div class="match-number-label">
-                {{ match.comp_level|upper }} {{ match.match_number }}
-            </div>
-            
-            <a href="{% url 'match:scout_form' match.key 'red' %}" class="alliance red-alliance d-flex flex-fill justify-content-around p-2 text-decoration-none">
-                {% for team in match.red_teams.all %}
-                    <span class="team-num">{{ team.team_number }}</span>
-                {% endfor %}
-            </a>
-            
-            <div class="vs-divider px-2">VS</div>
-            
-            <a href="{% url 'match:scout_form' match.key 'blue' %}" class="alliance blue-alliance d-flex flex-fill justify-content-around p-2 text-decoration-none">
-                {% for team in match.blue_teams.all %}
-                    <span class="team-num">{{ team.team_number }}</span>
-                {% endfor %}
-            </a>
-
-            </div>
-    {% empty %}
-        <div class="text-center p-5 border border-secondary rounded">
-            <p class="text-muted">No matches have been synced for this event yet.</p>
+    {% for match in event.matches.all %}
+    <div class="match-card mb-3">
+        <div class="match-header d-flex justify-content-between px-3 py-2">
+            <span class="fw-bold">{{ match.verbose_name }}</span>
+            <span class="text-muted small">
+                {% if match.predicted_time %}
+                    {{ match.predicted_time|date:"H:i" }}
+                {% endif %}
+            </span>
         </div>
+        
+        <div class="alliance-container d-flex">
+            <a href="{% url 'match:scout_form' match.key 'red' %}" 
+               class="alliance-block red-bg d-flex flex-grow-1 justify-content-around p-2 text-decoration-none">
+                {% for team in match.red_teams.all %}
+                    <span class="team-number">{{ team.team_number }}</span>
+                {% endfor %}
+            </a>
+            
+            <a href="{% url 'match:scout_form' match.key 'blue' %}" 
+               class="alliance-block blue-bg d-flex flex-grow-1 justify-content-around p-2 text-decoration-none">
+                {% for team in match.blue_teams.all %}
+                    <span class="team-number">{{ team.team_number }}</span>
+                {% endfor %}
+            </a>
+        </div>
+    </div>
     {% endfor %}
 </div>
     </div>

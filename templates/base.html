@@ -12,30 +12,43 @@
 
     <div style="display: flex; flex-direction: column; min-height: 100vh;">
 
-        <header style="background-color: #000; padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #C8FF00;">
-            
-            <div style="display: flex; align-items: center;">
-                <a href="{% url 'match:home' %}">
-                <img src="{% static 'images/scoutffiti.png' %}" alt="Scoutffiti" class="logo-img"></a>
-            </div>
+       <header style="background-color: #000; padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #C8FF00;">
+    
+    <div style="display: flex; align-items: center;">
+        <a href="{% url 'match:home' %}">
+            <img src="{% static 'images/scoutffiti.png' %}" alt="Scoutffiti" class="logo-img">
+        </a>
+    </div>
 
-            <nav style="display: flex; gap: 20px;">
-                <a href="{% url 'match:home' %}" style="color: #E0E0E0; text-decoration: none; font-weight: bold;">HOME</a>
-                </nav>
+    <nav style="display: flex; gap: 20px; align-items: center;">
+        <a href="{% url 'match:home' %}" style="color: #E0E0E0; text-decoration: none; font-weight: bold;">HOME</a>
+        
+        {% if user.is_authenticated %}
+            <a href="{% url 'match:export_scout_data' %}" 
+               style="color: #C8FF00; text-decoration: none; font-weight: bold; border: 1px solid #C8FF00; padding: 2px 8px; border-radius: 4px; font-size: 0.9rem;">
+               DOWNLOAD DATA (.CSV)
+            </a>
+        {% else %}
+            <a href="{% url 'register' %}" style="color: #C8FF00; text-decoration: none; font-weight: bold;">REGISTER</a>
+        {% endif %}
+    </nav>
 
-            <div style="color: #A0A0A0; font-size: 0.9em; text-align: right;">
-                {% if user.is_authenticated %}
-                    Welcome, <span style="color: #C8FF00; font-weight: bold;">{{ user.username }}</span><br>
-                    <a href="{% url 'logout' %}" style="color: #E0E0E0; text-decoration: none;">Log Out</a>
-                    {% if user.is_staff %}
-                        | <a href="/admin/" style="color: #A0A0A0; text-decoration: none;">Admin</a>
-                    {% endif %}
-                {% else %}
-                    Guest User<br>
-                    <a href="{% url 'login' %}" style="color: #E0E0E0; text-decoration: none; font-weight: bold;">Log In</a>
-                {% endif %}
-            </div>
-        </header>
+    <div style="color: #A0A0A0; font-size: 0.9em; text-align: right;">
+        {% if user.is_authenticated %}
+            Welcome, <span style="color: #C8FF00; font-weight: bold;">{{ user.username }}</span><br>
+            <form action="{% url 'logout' %}" method="post" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" style="background: none; border: none; color: #E0E0E0; padding: 0; cursor: pointer; font-size: inherit; text-decoration: none;">Log Out</button>
+            </form>
+            {% if user.is_staff %}
+                | <a href="/admin/" style="color: #A0A0A0; text-decoration: none;">Admin</a>
+            {% endif %}
+        {% else %}
+            Guest User<br>
+            <a href="{% url 'login' %}" style="color: #E0E0E0; text-decoration: none; font-weight: bold;">Log In</a>
+        {% endif %}
+    </div>
+</header>
 
         {% if messages %}
             <div style="padding: 10px 20px;">

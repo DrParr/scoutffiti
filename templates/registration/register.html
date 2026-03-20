@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5" style="max-width: 450px;">
+    <div class="team-card p-4 border-left-neon shadow-lg" style="background: #111;">
+        <h2 class="text-chartreuse mb-1" style="font-weight: 900;">NEW SCOUT</h2>
+        <p class="text-muted mb-4 small">CREATE AN ACCOUNT TO START RECORDING MATCHES</p>
+        
+        <form method="post" class="scout-auth-form">
+            {% csrf_token %}
+            
+            {% if form.errors %}
+                <div class="alert alert-danger bg-black border-danger text-danger small">
+                    Please correct the errors below.
+                </div>
+            {% endif %}
+
+            <div class="text-white">
+                {{ form.as_p }}
+            </div>
+
+            <button type="submit" class="btn btn-chartreuse w-100 mt-4 py-2 shadow">
+                INITIALIZE ACCOUNT
+            </button>
+        </form>
+
+        <div class="mt-4 pt-3 border-top border-secondary text-center">
+            <span class="text-muted small">Already registered?</span>
+            <a href="{% url 'login' %}" class="text-chartreuse small text-decoration-none ms-1">LOGIN</a>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Styling Django's default form output to match the theme */
+    .scout-auth-form p { margin-bottom: 15px; }
+    .scout-auth-form label { 
+        display: block; 
+        color: var(--neon-chartreuse); 
+        font-size: 0.8rem; 
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 5px;
+    }
+    .scout-auth-form input { 
+        width: 100%; 
+        background: #000; 
+        border: 1px solid #333; 
+        color: #fff; 
+        padding: 10px; 
+        border-radius: 4px;
+    }
+    .scout-auth-form input:focus { border-color: var(--neon-chartreuse); outline: none; }
+    .helptext { display: block; font-size: 0.7rem; color: #666; margin-top: 5px; line-height: 1.2; }
+    .errorlist { color: #ff007f; font-size: 0.8rem; list-style: none; padding: 0; margin: 5px 0; }
+</style>
+{% endblock %}
