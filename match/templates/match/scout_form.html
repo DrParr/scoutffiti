@@ -27,10 +27,10 @@
                 <span class="text-chartreuse d-block mb-2 font-weight-bold" data-team-num="{{ team.team_number }}">TEAM {{ team.team_number }}</span>
                 <div class="btn-group w-100" role="group">
                     <input type="radio" class="btn-check" name="auto_t{{ forloop.counter }}_score" id="auto_t{{ forloop.counter }}_0" value="0" checked>
-                    <input type="radio" class="btn-check" name="auto_t{{ forloop.counter }}_score" id="auto_t{{ forloop.counter }}_1" value="1"><label class="btn btn-sm btn-outline-chartreuse" for="auto_t{{ forloop.counter }}_1">None</label>
-                    <input type="radio" class="btn-check" name="auto_t{{ forloop.counter }}_score" id="auto_t{{ forloop.counter }}_2" value="2"><label class="btn btn-sm btn-outline-chartreuse" for="auto_t{{ forloop.counter }}_2">Some</label>
-                    <input type="radio" class="btn-check" name="auto_t{{ forloop.counter }}_score" id="auto_t{{ forloop.counter }}_4" value="4"><label class="btn btn-sm btn-outline-chartreuse" for="auto_t{{ forloop.counter }}_4">Most</label>
-                    <input type="radio" class="btn-check" name="auto_t{{ forloop.counter }}_score" id="auto_t{{ forloop.counter }}_8" value="8"><label class="btn btn-sm btn-outline-chartreuse" for="auto_t{{ forloop.counter }}_8">All</label>
+                    <input type="radio" class="btn-check" name="auto_t{{ forloop.counter }}_score" id="auto_t{{ forloop.counter }}_1" value="1"><label class="btn btn-sm btn-outline-chartreuse" for="auto_t{{ forloop.counter }}_1">Marginal</label>
+                    <input type="radio" class="btn-check" name="auto_t{{ forloop.counter }}_score" id="auto_t{{ forloop.counter }}_2" value="2"><label class="btn btn-sm btn-outline-chartreuse" for="auto_t{{ forloop.counter }}_2">Partial</label>
+                    <input type="radio" class="btn-check" name="auto_t{{ forloop.counter }}_score" id="auto_t{{ forloop.counter }}_4" value="4"><label class="btn btn-sm btn-outline-chartreuse" for="auto_t{{ forloop.counter }}_4">Majority</label>
+                    <input type="radio" class="btn-check" name="auto_t{{ forloop.counter }}_score" id="auto_t{{ forloop.counter }}_8" value="8"><label class="btn btn-sm btn-outline-chartreuse" for="auto_t{{ forloop.counter }}_8">Dominant</label>
                 </div>
             </div>
             {% endfor %}

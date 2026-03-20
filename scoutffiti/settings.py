@@ -36,7 +36,7 @@ TBA_API_KEY = env('BLUE_ALLIANCE_API_KEY')
 SECRET_KEY = 'django-insecure-9**^ne8dks#(y56p6!p_n47s!v9p@b102$c*iv+lxsmc+x#w0l'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -128,11 +128,15 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
+# 1. This is where your CSS/JS live during development
 STATIC_URL = 'static/'
-
 STATICFILES_DIRS = [
-    BASE_DIR / "static",  # This tells Django to look in the root /static/ folder
+    BASE_DIR / "static",
 ]
+
+# 2. This is the FOLDER Nginx will actually look at. 
+# It must match the 'alias' in your Nginx config.
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Where to go after logging in
 LOGIN_REDIRECT_URL = 'match:home'

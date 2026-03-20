@@ -1,0 +1,19 @@
+[Unit]
+Description=Gunicorn instance to serve Scoutffiti
+After=network.target
+
+[Service]
+User=graffiti
+Group=www-data
+WorkingDirectory=/home/graffiti/scoutffiti
+
+ExecStart=/home/graffiti/scoutffiti/.venv/bin/gunicorn \
+          --workers 3 \
+          --bind 127.0.0.1:8000 \
+          scoutffiti.wsgi:application
+
+# Automatically restart if the process crashes
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
