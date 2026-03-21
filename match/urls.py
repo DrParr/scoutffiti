@@ -13,4 +13,5 @@ urlpatterns = [
     path('teams/', HomeView.as_view(), name='team_list'),
     path('match/<str:match_key>/<str:alliance_color>/submit/', views.submit_scout, name='submit_scout'),
     path('export/csv/', views.export_scout_data, name='export_scout_data'),
+    path('shutdown/', views.shutdown_pi, name='shutdown_pi'),
 ]

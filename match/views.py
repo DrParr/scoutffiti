@@ -12,6 +12,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.http import JsonResponse
 from django.urls import reverse
+from django.contrib.auth.decorators import user_passes_test
+import subprocess
 import json
 import csv
 
@@ -43,9 +45,11 @@ class EventDetailView(LoginRequiredMixin, DetailView):
     template_name = 'match/event_detail.html'
     context_object_name = 'event'
     
-    # This tells Django to look for the 'event_key' in the URL 
-    # and match it to the 'key' field in your Event model
-    pk_url_kwarg = 'event_key'
+    # Use 'key' because that is your primary_key field name
+    slug_field = 'key' 
+    
+    # Use 'event_key' because that is what you named it in urls.py
+    slug_url_kwarg = 'event_key'
 
 
 class ScoutFormView(LoginRequiredMixin, TemplateView):
@@ -199,3 +203,13 @@ def register(request):
         form = UserCreationForm()
     
     return render(request, 'registration/register.html', {'form': form})
+
+# Highly recommended: Only allow superusers to see/use this
+@user_passes_test(lambda u: u.is_superuser)
+def shutdown_pi(request):
+    if request.method == 'POST':
+        # Executes the system command
+        subprocess.run(['sudo', '/sbin/shutdown', '-h', 'now'])
+        return render(request, 'shutdown_confirm.html')
+    
+    return render(request, 'shutdown_button.html')

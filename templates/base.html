@@ -21,18 +21,27 @@
     </div>
 
     <nav style="display: flex; gap: 20px; align-items: center;">
-        <a href="{% url 'match:home' %}" style="color: #E0E0E0; text-decoration: none; font-weight: bold;">HOME</a>
-        
-        {% if user.is_authenticated %}
-            <a href="{% url 'match:export_scout_data' %}" 
-               style="color: #C8FF00; text-decoration: none; font-weight: bold; border: 1px solid #C8FF00; padding: 2px 8px; border-radius: 4px; font-size: 0.9rem;">
-               DOWNLOAD DATA (.CSV)
-            </a>
-        {% else %}
-            <a href="{% url 'register' %}" style="color: #C8FF00; text-decoration: none; font-weight: bold;">REGISTER</a>
-        {% endif %}
-    </nav>
+    <a href="{% url 'match:home' %}" style="color: #E0E0E0; text-decoration: none; font-weight: bold;">HOME</a>
+    
+    {% if user.is_authenticated %}
+        <a href="{% url 'match:export_scout_data' %}" 
+           style="color: #C8FF00; text-decoration: none; font-weight: bold; border: 1px solid #C8FF00; padding: 2px 8px; border-radius: 4px; font-size: 0.9rem;">
+           DOWNLOAD DATA (.CSV)
+        </a>
 
+        {% if user.is_superuser %}
+            <form id="shutdown-form" action="{% url 'match:shutdown_pi' %}" method="post" style="display: inline;">
+                {% csrf_token %}
+                <button type="button" onclick="confirmShutdown()" 
+                   style="background: none; border: 1px solid #ff4444; color: #ff4444; padding: 2px 8px; border-radius: 4px; font-size: 0.9rem; font-weight: bold; cursor: pointer;">
+                   SHUTDOWN PI
+                </button>
+            </form>
+        {% endif %}
+        {% else %}
+        <a href="{% url 'register' %}" style="color: #C8FF00; text-decoration: none; font-weight: bold;">REGISTER</a>
+    {% endif %}
+</nav>
     <div style="color: #A0A0A0; font-size: 0.9em; text-align: right;">
         {% if user.is_authenticated %}
             Welcome, <span style="color: #C8FF00; font-weight: bold;">{{ user.username }}</span><br>
@@ -72,4 +81,22 @@
 
     </div>
 </body>
+<script>
+function confirmShutdown() {
+    if (confirm("Are you sure? This will power off the Raspberry Pi and take the Scoutffiti server offline.")) {
+        // Change the UI so the user knows it worked
+        const mainContent = document.querySelector('main');
+        if (mainContent) {
+            mainContent.innerHTML = `
+                <div style="text-align: center; margin-top: 50px;">
+                    <h1 style="color: #C8FF00;">System Shutting Down...</h1>
+                    <p style="color: #A0A0A0;">The hardware is powering off. You can close this tab.</p>
+                </div>
+            `;
+        }
+        // Submit the hidden form
+        document.getElementById('shutdown-form').submit();
+    }
+}
+</script>
 </html>

@@ -36,7 +36,7 @@ TBA_API_KEY = env('BLUE_ALLIANCE_API_KEY')
 SECRET_KEY = 'django-insecure-9**^ne8dks#(y56p6!p_n47s!v9p@b102$c*iv+lxsmc+x#w0l'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
