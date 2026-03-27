@@ -101,41 +101,42 @@ def submit_scout(request, match_key, alliance_color):
         # 2. Get the teams in the alliance
         teams = match.get_teams_for_alliance(alliance_color)
 
-        # 3. Save the data for all 3 teams
-        for i, team in enumerate(teams, start=1):
-            # Save Auto
-            TeamPeriodData.objects.create(
-                report=report,
-                team=team,
-                phase='auto',
-                score_value=int(data.get(f'auto_t{i}_score', 0))
-            )
-
-            # Save 6 Tele-op Periods
-            for p in range(1, 7):
+        # Helper to process a specific phase (auto, p1, p2, etc.)
+        def process_phase(phase_name, keys):
+            # Convert values to int, treating missing as 0
+            scores = [int(data.get(k, 0)) for k in keys]
+            total = sum(scores)
+            
+            for i, team in enumerate(teams):
+                score = scores[i]
+                share = (score / total) if total > 0 else 0.0
+                
+                # This replaces all individual .create() calls
                 TeamPeriodData.objects.create(
                     report=report,
                     team=team,
-                    phase=f'p{p}',
-                    score_value=int(data.get(f'p{p}_t{i}_score', 0)),
-                    defended=data.get(f'p{p}_t{i}_def', False),
-                    passed=data.get(f'p{p}_t{i}_pass', False)
+                    phase=phase_name,
+                    score_value=score,
+                    alliance_share=share, 
+                    defended=data.get(f'{phase_name}_t{i+1}_def', False),
+                    passed=data.get(f'{phase_name}_t{i+1}_pass', False)
                 )
 
-        # 4. TOURNAMENT-AWARE NEXT MATCH LOGIC
-        # We fetch all matches for the event. Because of our MatchManager, 
-        # this list is ALREADY sorted: Quals 1-81 -> Semis -> Finals.
+        # 3. Process All Phases
+        # Auto
+        process_phase('auto', [f'auto_t{i}_score' for i in range(1, 4)])
+        # Tele-op Periods 1-6
+        for p in range(1, 7):
+            process_phase(f'p{p}', [f'p{p}_t{i}_score' for i in range(1, 4)])
+
+        # 4. TOURNAMENT-AWARE NEXT MATCH LOGIC (Remains the same...)
         all_matches = list(Match.objects.filter(event=match.event))
         next_match = None
-        
         try:
-            # Find the index of the current match in the sorted list
             current_index = all_matches.index(match)
-            # If there's another match after this one, that's our "Next"
             if current_index + 1 < len(all_matches):
                 next_match = all_matches[current_index + 1]
         except ValueError:
-            # Fallback: if index fails, try to find the next number in the same level
             next_match = Match.objects.filter(
                 event=match.event,
                 comp_level=match.comp_level,
@@ -149,13 +150,12 @@ def submit_scout(request, match_key, alliance_color):
                 'alliance_color': alliance_color
             })
         else:
-            # End of the tournament! Send them to the event dashboard
             next_url = reverse('match:event_detail', kwargs={'event_key': match.event.key})
 
         return JsonResponse({
             "status": "success",
             "next_url": next_url,
-            "message": f"Saved {match.verbose_name}. Moving to {next_match.verbose_name if next_match else 'Dashboard'}."
+            "message": f"Saved {match.verbose_name}."
         })
 
 @login_required
@@ -166,28 +166,24 @@ def export_scout_data(request):
     writer = csv.writer(response)
     # Added 'Event' and 'EventKey' to the header
     writer.writerow([
-        'Event', 'EventKey', 'Match', 'Scout', 'Alliance', 
-        'Team', 'Phase', 'ScoreValue', 'Defended', 'Passed', 'Timestamp'
+        'Event', 'Match', 'Team', 'Phase', 'ScoreValue', 'AllianceShare%', 'Defended', 'Passed'
     ])
 
-    # select_related now goes 3 levels deep: Period -> Report -> Match -> Event
-    data_points = TeamPeriodData.objects.select_related(
-        'report__match__event', 'report__scout', 'team'
-    ).all()
+    data_points = TeamPeriodData.objects.select_related('report__match__event', 'team').all()
 
     for dp in data_points:
+        # Convert 0.8 to "80.0%"
+        share_percent = f"{dp.alliance_share * 100:.1f}%"
+        
         writer.writerow([
             dp.report.match.event.name,
-            dp.report.match.verbose_name,  # "Quals 1", "Finals 2", etc.
-            dp.report.match.key,           # The technical key: "2026wiply_qm1"
-            dp.report.scout.username,
-            dp.report.alliance_color,
+            dp.report.match.verbose_name,
             dp.team.team_number,
             dp.phase,
             dp.score_value,
+            share_percent, # The new math column
             dp.defended,
-            dp.passed,
-            dp.report.created_at.strftime('%Y-%m-%d %H:%M')
+            dp.passed
         ])
 
     return response
@@ -210,6 +206,6 @@ def shutdown_pi(request):
     if request.method == 'POST':
         # Executes the system command
         subprocess.run(['sudo', '/sbin/shutdown', '-h', 'now'])
-        return render(request, 'shutdown_confirm.html')
+        return render(request, 'match/shutdown_confirm.html')
     
     return render(request, 'shutdown_button.html')

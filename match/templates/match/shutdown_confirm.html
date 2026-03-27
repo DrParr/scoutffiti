@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5 text-center" style="max-width: 500px;">
+    <div class="card shadow">
+        <div class="card-body p-5">
+            <h2 class="text-danger mb-4">Shutting Down...</h2>
+            <div class="spinner-border text-danger mb-4" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="lead">The Raspberry Pi is now closing all processes and performing a safe shutdown.</p>
+            <hr>
+            <p class="text-muted">You can safely unplug the power once the green "ACT" LED on the Pi stops blinking (usually takes about 10-15 seconds).</p>
+            <p><strong>See you at the next match! 🤖</strong></p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Since the server is dying, we don't want the user 
+    // trying to refresh or navigate away.
+    console.log("System shutdown initiated.");
+</script>
+{% endblock %}

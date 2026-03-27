@@ -155,6 +155,9 @@ class TeamPeriodData(models.Model):
         ('p4', 'Tele-op 4'), ('p5', 'Tele-op 5'), ('p6', 'Tele-op 6'),
     ]
 
+    score_value = models.IntegerField(default=0)
+    alliance_share = models.FloatField(default=0.0) # New field: e.g., 0.8 for 80%
+
     report = models.ForeignKey(MatchScoutReport, related_name='period_data', on_delete=models.CASCADE)
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
     

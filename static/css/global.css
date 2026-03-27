@@ -1,5 +1,7 @@
 /* static/css/global.css */
 
+
+
 /* 1. COLOR VARIABLES & THEME SETUP */
 :root {
     /* Branding Colors from Logo */
@@ -174,4 +176,12 @@ body {
         font-size: 1.25rem;
         letter-spacing: 1px;
     }
+}
+
+
+.danny {
+    font-size:5 em;
+    color:greenyellow;
+    font-weight: bold;
+
 }

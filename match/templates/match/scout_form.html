@@ -39,7 +39,7 @@
 
         {% for period in "123456"|make_list %}
         <div id="step-tele-{{ period }}" class="scout-step" style="display: none;">
-            <h4 class="text-white mb-3">Tele-op Period {{ period }} of 6</h4>
+            <h1 class="text-white mb-3">Tele-op Period <span class = "danny">{{ period }}</span> of 6</h1>
             {% for team in teams %}
             <div class="team-card mb-3 p-3">
                 <span class="text-chartreuse d-block mb-2 font-weight-bold">TEAM {{ team.team_number }}</span>
@@ -97,6 +97,7 @@
     .team-card { background: #1a1a1a; border: 1px solid #333; border-radius: 8px; }
     .btn-outline-chartreuse { color: var(--neon-chartreuse); border-color: var(--neon-chartreuse); }
     .btn-check:checked + .btn-outline-chartreuse { background: var(--neon-chartreuse); color: #000; }
+    .btn-check:hover+ .btn-outline-magenta { background: var(--neon-magenta); color:#fff; }
     .btn-outline-magenta { color: var(--neon-magenta); border-color: var(--neon-magenta); }
     .btn-check:checked + .btn-outline-magenta { background: var(--neon-magenta); color: #fff; }
     .btn-chartreuse { background: var(--neon-chartreuse); color: #000; font-weight: 900; border: none; }
