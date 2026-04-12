@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Take environment variables from .env file
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
-TBA_API_KEY = env('BLUE_ALLIANCE_API_KEY')
+TBA_API_KEY = env('BLUE_ALLIANCE_API_KEY', default='test-key-for-ci')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
