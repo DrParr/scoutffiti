@@ -33,7 +33,7 @@ TBA_API_KEY = env('BLUE_ALLIANCE_API_KEY', default='test-key-for-ci')
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-9**^ne8dks#(y56p6!p_n47s!v9p@b102$c*iv+lxsmc+x#w0l'
+SECRET_KEY = env('SECRET_KEY', default='django-insecure-dev-key-only-for-local-testing')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
